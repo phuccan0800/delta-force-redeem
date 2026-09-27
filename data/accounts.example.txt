@@ -1,0 +1,2 @@
+# Mỗi tài khoản một dòng, theo định dạng:
+# openid:token

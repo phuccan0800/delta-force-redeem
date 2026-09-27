@@ -1,0 +1,5 @@
+# Không bắt buộc. Mỗi proxy một dòng, hỗ trợ:
+# ip:port
+# ip:port:user:password
+# http://user:password@ip:port
+# socks5://user:password@ip:port

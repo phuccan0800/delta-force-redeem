@@ -1,0 +1,3 @@
+# Mỗi CDKey một dòng:
+# CODE_1
+# CODE_2
