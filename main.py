@@ -35,7 +35,7 @@ DATA_DIR = APPLICATION_DIR / "data"
 ACCOUNTS_FILE = DATA_DIR / "accounts.txt"
 CODES_FILE = DATA_DIR / "codes.txt"
 PROXIES_FILE = DATA_DIR / "proxies.txt"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 BASE_URL = "https://sg-act.playerinfinite.com"
 REDEEM_PATH = "api/proxy/present/CdkV2/RedeemCDKey"
@@ -67,14 +67,14 @@ MESSAGES = {
     0: ("SUCCESS", "Đã nhận thành công! Vui lòng kiểm tra thư trong game.", False),
     51: ("SYSTEM_ERROR", "Lỗi hệ thống.", True),
     300001: ("AUTH_EXPIRED", "Phiên đăng nhập đã hết hạn.", False),
-    400053: ("ACCOUNT_LIMIT", "Tài khoản đã đổi code này.", False),
-    400054: ("INVALID", "CDKey không hợp lệ.", False),
-    400067: ("GROUP_LIMIT", "Tài khoản đạt giới hạn của nhóm CDKey.", False),
-    400068: ("CODE_LIMIT", "CDKey đã hết lượt đổi.", False),
-    400069: ("NOT_STARTED", "CDKey chưa đến thời gian đổi.", False),
-    400070: ("EXPIRED", "CDKey đã hết thời gian đổi.", False),
-    400072: ("ALREADY_REDEEMED", "Tài khoản đã đổi CDKey này.", False),
-    400073: ("CONFIG_ERROR", "Lỗi cấu hình gói CDKey.", False),
+    400053: ("ACCOUNT_LIMIT", "Tài khoản đã redeem Gift Code này.", False),
+    400054: ("INVALID", "Gift Code không hợp lệ.", False),
+    400067: ("GROUP_LIMIT", "Tài khoản đã đạt giới hạn nhóm Gift Code.", False),
+    400068: ("CODE_LIMIT", "Gift Code đã hết lượt redeem.", False),
+    400069: ("NOT_STARTED", "Gift Code chưa đến thời gian redeem.", False),
+    400070: ("EXPIRED", "Gift Code đã hết hạn.", False),
+    400072: ("ALREADY_REDEEMED", "Tài khoản đã redeem Gift Code này.", False),
+    400073: ("CONFIG_ERROR", "Gift Code đang gặp lỗi cấu hình.", False),
     503001: ("NOT_ELIGIBLE", "Tài khoản chưa đủ điều kiện.", False),
     503701: ("NETWORK_ERROR", "Lỗi mạng từ máy chủ.", True),
 }
@@ -325,13 +325,13 @@ async def run(log: Callable[[str], None] = print) -> None:
     if not accounts:
         raise ValueError(f"{ACCOUNTS_FILE} chưa có account")
     if not codes:
-        raise ValueError(f"{CODES_FILE} chưa có code")
+        raise ValueError(f"{CODES_FILE} chưa có Gift Code")
 
     proxies = await find_working_proxies(proxies, len(accounts), log)
     total_jobs = len(accounts) * len(codes)
 
     log(
-        f"Accounts: {len(accounts)} | Codes: {len(codes)} | "
+        f"Tài khoản: {len(accounts)} | Gift Code: {len(codes)} | "
         f"Proxies: {len(proxies)} | Pending: {total_jobs} | "
         f"Concurrent accounts: {min(len(accounts), CONCURRENCY)}"
     )
@@ -392,7 +392,7 @@ class RedeemApp:
         self.events: queue.Queue[tuple[str, str]] = queue.Queue()
         self.running = False
 
-        root.title(f"DF Redeem v{VERSION}")
+        root.title(f"Tool Redeem Gift Code Delta Force v{VERSION}")
         root.geometry("920x720")
         root.minsize(760, 620)
         root.configure(background="#F3F7F6")
@@ -443,7 +443,11 @@ class RedeemApp:
         container = ttk.Frame(root, style="App.TFrame", padding=(28, 22))
         container.pack(fill="both", expand=True)
 
-        ttk.Label(container, text="DF Redeem", style="Title.TLabel").pack(anchor="w")
+        ttk.Label(
+            container,
+            text="Tool Redeem Gift Code Delta Force",
+            style="Title.TLabel",
+        ).pack(anchor="w")
         ttk.Label(
             container,
             text="Dán dữ liệu vào 3 ô bên dưới, sau đó bấm Lưu và chạy.",
@@ -468,8 +472,8 @@ class RedeemApp:
             form,
             row=0,
             column=1,
-            title="2. CDKey",
-            hint="Mỗi dòng một code",
+            title="2. Gift Code",
+            hint="Mỗi dòng một Gift Code",
             height=6,
         )
         self.proxies_text = self._create_input(
@@ -592,7 +596,10 @@ class RedeemApp:
             self.accounts_text.focus_set()
             return False
         if not codes:
-            messagebox.showerror("Thiếu CDKey", "Hãy nhập ít nhất một CDKey.")
+            messagebox.showerror(
+                "Thiếu Gift Code",
+                "Hãy nhập ít nhất một Gift Code.",
+            )
             self.codes_text.focus_set()
             return False
 
@@ -623,7 +630,7 @@ class RedeemApp:
         self.run_button.configure(state="disabled", text="Đang chạy...")
         self.status_label.configure(text="Đang xử lý, vui lòng chờ")
         self._clear_log()
-        self._append_log("Bắt đầu đổi code...")
+        self._append_log("Bắt đầu redeem Gift Code...")
         threading.Thread(target=self._run_worker, daemon=True).start()
 
     def _run_worker(self) -> None:
@@ -634,7 +641,9 @@ class RedeemApp:
         except Exception as error:
             self.events.put(("error", f"{type(error).__name__}: {error}"))
         else:
-            self.events.put(("done", "Đã xử lý xong tất cả tài khoản và CDKey."))
+            self.events.put(
+                ("done", "Đã xử lý xong tất cả tài khoản và Gift Code.")
+            )
 
     def process_events(self) -> None:
         try:
