@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "1.0.0"
+    [string]$Version = "1.1.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,7 +22,7 @@ try {
         --noconfirm `
         --clean `
         --onefile `
-        --console `
+        --windowed `
         --name "DF-Redeem" `
         "main.py"
 

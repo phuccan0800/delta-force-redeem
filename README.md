@@ -5,17 +5,14 @@ proxy và tự thử lại khi máy chủ giới hạn tốc độ hoặc gặp 
 
 ## Tải bản Windows
 
-Tải file `DF-Redeem-v1.0.0-windows-x64.zip` trong mục **Releases**, giải nén
-toàn bộ rồi:
+Tải file `DF-Redeem-v1.1.0-windows-x64.zip` trong mục **Releases**, giải nén
+toàn bộ rồi chạy `DF-Redeem.exe`.
 
-1. Đổi tên `data/accounts.example.txt` thành `data/accounts.txt`.
-2. Đổi tên `data/codes.example.txt` thành `data/codes.txt`.
-3. Nếu dùng proxy, đổi tên `data/proxies.example.txt` thành
-   `data/proxies.txt`.
-4. Điền dữ liệu theo hướng dẫn bên dưới và chạy `DF-Redeem.exe`.
+Giao diện có ba ô để dán tài khoản, CDKey và proxy. Bấm **Lưu và chạy** để lưu
+dữ liệu trên máy và bắt đầu đổi code. Kết quả được hiển thị ngay trong cửa sổ.
 
-Không di chuyển riêng file `.exe` ra khỏi thư mục đã giải nén vì chương trình
-cần đọc các file trong thư mục `data` nằm cạnh nó.
+Không di chuyển riêng file `.exe` ra khỏi thư mục đã giải nén. Dữ liệu được lưu
+trong thư mục `data` nằm cạnh chương trình để lần sau không phải nhập lại.
 
 ## Cài đặt
 
@@ -108,11 +105,14 @@ socks5://user:password@ip:port
 Chương trình tự kiểm tra proxy và bỏ qua proxy lỗi. Nếu không có proxy hoạt
 động, chương trình sẽ kết nối trực tiếp.
 
-## Chạy
+## Chạy bằng mã nguồn
 
 ```powershell
 py main.py
 ```
+
+Chương trình mặc định mở giao diện. Có thể chạy chế độ dòng lệnh bằng
+`py main.py --cli`.
 
 Mỗi tài khoản chỉ gửi một request tại một thời điểm và nghỉ ngẫu nhiên
 1,5–3 giây giữa các code. Nhiều tài khoản vẫn có thể chạy song song. Nếu máy
